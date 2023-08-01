@@ -30,13 +30,31 @@ def handle_hello():
 
     # this is how you can use the Family datastructure by calling its methods
     members = jackson_family.get_all_members()
-    response_body = {
-        "hello": "world",
-        "family": members
-    }
-
-
+    response_body = members
     return jsonify(response_body), 200
+
+@app.route('/member/<int:id>', methods=['GET'])
+def print_member(id):
+    member = jackson_family.get_member(id)
+    if not member:
+        return "Not found", 400
+    else:
+        return member, 200
+
+
+@app.route('/member', methods=['POST'])
+def new_member():
+    data = request.get_json()
+    jackson_family.add_member(data)
+    return jsonify({"Status": "ok"}), 200
+
+@app.route('/member/<int:id>', methods=['DELETE'])
+def delete_member(id):
+    deleted = jackson_family.delete_member(id)
+    if deleted is not None:
+        return ({"done": True}), 200
+    else:
+        return ({"done": False}), 400
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
